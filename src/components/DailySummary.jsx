@@ -1,5 +1,6 @@
 const MACROS = [
-  { key: 'protein', label: 'Protein' },
+  // Protein's goal is a minimum, so reaching or passing it is good, not "over".
+  { key: 'protein', label: 'Protein', minimum: true },
   { key: 'carbs', label: 'Carbs' },
   { key: 'fat', label: 'Fat' },
 ]
@@ -8,12 +9,12 @@ function round(n) {
   return Math.round(n * 10) / 10
 }
 
-function Bar({ value, goal, className = '' }) {
+function Bar({ value, goal, className = '', minimum = false }) {
   const pct = goal > 0 ? Math.min(100, (value / goal) * 100) : 0
-  const over = value > goal
+  const state = minimum ? (goal > 0 && value >= goal ? 'met' : '') : value > goal ? 'over' : ''
   return (
     <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={goal} aria-valuenow={round(value)}>
-      <div className={`bar-fill ${className} ${over ? 'over' : ''}`} style={{ width: `${pct}%` }} />
+      <div className={`bar-fill ${className} ${state}`} style={{ width: `${pct}%` }} />
     </div>
   )
 }
@@ -51,7 +52,7 @@ export default function DailySummary({ entries, goals, recommended }) {
       <Bar value={totals.calories} goal={goals.calories} className="cal" />
 
       <div className="macros">
-        {MACROS.map(({ key, label }) => (
+        {MACROS.map(({ key, label, minimum }) => (
           <div key={key} className="macro">
             <div className="macro-head">
               <span>{label}</span>
@@ -59,7 +60,7 @@ export default function DailySummary({ entries, goals, recommended }) {
                 {round(totals[key])} / {round(goals[key])} g
               </span>
             </div>
-            <Bar value={totals[key]} goal={goals[key]} className={key} />
+            <Bar value={totals[key]} goal={goals[key]} className={key} minimum={minimum} />
             {recommended && <div className="muted note">{recommendedText(key, recommended)}</div>}
           </div>
         ))}

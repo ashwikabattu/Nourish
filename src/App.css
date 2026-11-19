@@ -333,6 +333,9 @@ select {
 .bar-fill.over {
   background: var(--danger);
 }
+.bar-fill.met {
+  background: var(--accent);
+}
 
 .macros {
   display: flex;
