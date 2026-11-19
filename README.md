@@ -4,7 +4,7 @@ A full-stack nutrition tracker. Enter your age, sex, height, weight, and activit
 
 **Stack:** React + Vite · Node.js + Express 5 API in TypeScript · PostgreSQL · Docker · AWS Elastic Beanstalk + RDS · GitHub Actions CI
 
-<!-- After deploying, add: **Live:** https://your-url -->
+**Live:** https://d2i5ip6halh9za.cloudfront.net
 
 ## Features
 
