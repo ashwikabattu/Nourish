@@ -1,0 +1,38 @@
+# Runs the production image locally against a real Postgres, the same shape as AWS.
+#   docker compose up --build   ->  http://localhost:8080
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: nourish
+      POSTGRES_PASSWORD: nourish
+      POSTGRES_DB: nourish
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nourish"]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    # Supplies FDC_API_KEY at runtime; the file is never copied into the image.
+    env_file:
+      - path: server/.env
+        required: false
+    # These take priority over anything in server/.env.
+    environment:
+      PORT: "8080"
+      DATABASE_URL: postgres://nourish:nourish@db:5432/nourish
+      DATABASE_SSL_CA: ""   # local Postgres has no TLS
+      JWT_SECRET: local-docker-secret-at-least-32-characters-long
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
